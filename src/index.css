@@ -241,3 +241,55 @@ a {
   background-color: rgba(239, 68, 68, 0.2);
   color: var(--accent-danger);
 }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  :root {
+    --radius-lg: 8px;
+    /* Smaller radius on mobile */
+  }
+
+  /* Helper to hide elements on mobile */
+  .desktop-only {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) {
+
+  /* Helper to hide elements on desktop */
+  .mobile-only {
+    display: none !important;
+  }
+}
+
+/* Mobile Sidebar Drawer Styles */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 40;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Mobile adjustments for main content padding */
+@media (max-width: 768px) {
+  main {
+    padding: 1rem !important;
+    padding-top: 4.5rem !important;
+    /* Make room for top bar */
+  }
+}
