@@ -1,4 +1,4 @@
-# Invalid Apogee - Health Tracker
+# Health Tracker
 
 A comprehensive personal health dashboard built with React and TypeScript, designed to help you track lab results, monitor diet, and visualize your health journey.
 

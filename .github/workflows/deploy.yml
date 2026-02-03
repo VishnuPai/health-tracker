@@ -15,4 +15,4 @@ jobs:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_HEALTH_TRACKER }}'
           channelId: live
-          projectId: health-tracker-app-YOUR-ID
+          projectId: health-tracker-app-1cc9d
