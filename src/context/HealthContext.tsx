@@ -49,17 +49,19 @@ export const HealthProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     // 1. Auth Listener
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            console.log("[AuthDebug] Auth State Changed:", currentUser ? `Logged in as ${currentUser.uid}` : "Logged out");
             setUser(currentUser);
             if (currentUser) {
                 // Initialize user in DB if new
                 try {
+                    console.log("[AuthDebug] Initializing user profile in DB...");
                     const profile = await initializeUser(currentUser.uid, currentUser.email || '');
+                    console.log("[AuthDebug] Profile Loaded:", profile);
                     setUserProfile(profile);
                     setRole(profile.role || 'user');
-                    // Store API key locally or in DB? Let's keep local for now for simplicity, or sync to DB profile?
-                    // For now, let's look for API key in profile if we decide to store it there.
                 } catch (e) {
-                    console.error("Error initializing user:", e);
+                    console.error("[AuthDebug] Error initializing user:", e);
+                    // Critical: If DB fails, we still have a user, but no profile.
                 }
             } else {
                 setRole('user');
@@ -123,8 +125,20 @@ export const HealthProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
     // Action Handlers - writing to Firestore
     const updateUserProfileHandler = async (data: Partial<UserProfile>) => {
-        if (!user) return;
-        await updateDbProfile(user.uid, data);
+        if (!user) {
+            console.error("[AuthDebug] Cannot update profile: No user logged in.");
+            return;
+        }
+        console.log("[AuthDebug] Updating profile for:", user.uid, data);
+        try {
+            await updateDbProfile(user.uid, data);
+            // Manually update local state to reflect change immediately (optimistic UI)
+            setUserProfile(prev => prev ? { ...prev, ...data } : null);
+            console.log("[AuthDebug] Profile updated successfully.");
+        } catch (error) {
+            console.error("[AuthDebug] Error updating profile:", error);
+            throw error;
+        }
     };
 
 

@@ -9,20 +9,29 @@ export type UserRole = 'user' | 'coach' | 'admin';
 
 // Initialize user in Firestore if not exists
 export const initializeUser = async (uid: string, email: string) => {
+    console.log(`[DBDebug] Checking user ${uid} in Firestore...`);
     const userRef = doc(db, 'users', uid);
-    const userSnap = await getDoc(userRef);
+    try {
+        const userSnap = await getDoc(userRef);
 
-    if (!userSnap.exists()) {
-        const newUser: UserProfile = {
-            uid,
-            email,
-            role: 'user', // Default role
-            // Default empty profile
-        };
-        await setDoc(userRef, newUser);
-        return newUser;
+        if (!userSnap.exists()) {
+            console.log(`[DBDebug] User ${uid} not found, creating new...`);
+            const newUser: UserProfile = {
+                uid,
+                email,
+                role: 'user', // Default role
+                // Default empty profile
+            };
+            await setDoc(userRef, newUser);
+            console.log(`[DBDebug] User ${uid} created.`);
+            return newUser;
+        }
+        console.log(`[DBDebug] User ${uid} found.`);
+        return userSnap.data() as UserProfile;
+    } catch (error) {
+        console.error(`[DBDebug] Error in initializeUser for ${uid}:`, error);
+        throw error;
     }
-    return userSnap.data() as UserProfile;
 };
 
 // Update user profile
