@@ -34,19 +34,24 @@ const Profile = () => {
         }
     }, [userProfile]);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const profile: UserProfile = {
-            name,
-            age: Number(age),
-            gender,
-            height: Number(height),
-            weight: Number(weight),
-            activityLevel,
-            goal
-        };
-        updateUserProfile(profile);
-        alert('Profile saved successfully!');
+        try {
+            const profile: UserProfile = {
+                name,
+                age: Number(age),
+                gender,
+                height: Number(height),
+                weight: Number(weight),
+                activityLevel,
+                goal
+            };
+            await updateUserProfile(profile);
+            alert('Profile saved successfully!');
+        } catch (error) {
+            console.error("Failed to save profile:", error);
+            alert('Failed to save profile. Check console for details.');
+        }
     };
 
     // Calculations

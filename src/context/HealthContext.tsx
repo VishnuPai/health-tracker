@@ -11,7 +11,7 @@ interface HealthContextType {
     sleepEntries: Sleep[];
     userProfile: UserProfile | null;
     labReports: LabReport[];
-    updateUserProfile: (profile: Partial<UserProfile>) => void;
+    updateUserProfile: (profile: Partial<UserProfile>) => Promise<void>;
     addLabReport: (report: LabReport) => void;
     deleteLabReport: (id: string) => void;
     addWorkout: (workout: Workout) => void;
