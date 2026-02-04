@@ -8,7 +8,7 @@ import { Card } from '../components/ui/Card';
 import type { UserProfile } from '../types';
 
 const Profile = () => {
-    const { userProfile, updateUserProfile, apiKey, updateApiKey } = useHealth();
+    const { userProfile, updateUserProfile } = useHealth();
 
     // Local state for form
     const [name, setName] = useState(userProfile?.name || '');
@@ -19,9 +19,8 @@ const Profile = () => {
     const [activityLevel, setActivityLevel] = useState<UserProfile['activityLevel']>(userProfile?.activityLevel || 'sedentary');
     const [goal, setGoal] = useState<UserProfile['goal']>(userProfile?.goal || 'maintain');
 
-    // API Key State
-    const [keyInput, setKeyInput] = useState(apiKey || '');
-    const [showKey, setShowKey] = useState(false);
+    // API Key State - Removed
+
 
     useEffect(() => {
         if (userProfile) {

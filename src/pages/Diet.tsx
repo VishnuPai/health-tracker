@@ -303,7 +303,7 @@ const DietPage = () => {
 };
 
 const RecommendationsSection = () => {
-    const { userProfile, labReports, dietEntries, apiKey } = useHealth();
+    const { userProfile, labReports, dietEntries } = useHealth();
     const plan = getDietaryRecommendations(userProfile, labReports);
 
     // AI State

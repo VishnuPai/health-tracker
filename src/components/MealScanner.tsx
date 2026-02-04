@@ -5,12 +5,11 @@ import { Card } from './ui/Card';
 import { analyzeFoodImage, type ScannedFoodResult } from '../services/gemini';
 
 interface MealScannerProps {
-    apiKey: string;
     onScanComplete: (result: ScannedFoodResult) => void;
     onCancel: () => void;
 }
 
-export const MealScanner = ({ apiKey, onScanComplete, onCancel }: MealScannerProps) => {
+export const MealScanner = ({ onScanComplete, onCancel }: MealScannerProps) => {
     const [image, setImage] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -29,7 +28,7 @@ export const MealScanner = ({ apiKey, onScanComplete, onCancel }: MealScannerPro
     };
 
     const handleAnalyze = async () => {
-        if (!image || !apiKey) return;
+        if (!image) return;
 
         setLoading(true);
         setError(null);
@@ -39,7 +38,7 @@ export const MealScanner = ({ apiKey, onScanComplete, onCancel }: MealScannerPro
             const base64Data = image.split(',')[1];
             const mimeType = image.split(';')[0].split(':')[1];
 
-            const result = await analyzeFoodImage(base64Data, mimeType, apiKey);
+            const result = await analyzeFoodImage(base64Data, mimeType);
             onScanComplete(result);
         } catch (err: any) {
             console.error(err);
