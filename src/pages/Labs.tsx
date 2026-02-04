@@ -565,7 +565,10 @@ const ReportCard = ({ report, onDelete, onViewPdf, onEdit }: {
         setError(null);
         try {
             // Rate Limit Check
-            const uid = userProfile?.uid || 'guest';
+            const uid = userProfile?.uid;
+            if (!uid) {
+                throw new Error("You must be logged in to use this feature.");
+            }
             const allowed = await checkAndIncrementUsage(uid, CONFIG.AI_DAILY_LIMIT);
             if (!allowed) {
                 throw new Error(`Daily limit of ${CONFIG.AI_DAILY_LIMIT} requests reached. Please try again tomorrow.`);

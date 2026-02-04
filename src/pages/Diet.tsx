@@ -318,7 +318,10 @@ const RecommendationsSection = () => {
         setError(null);
         try {
             // Rate Limit Check
-            const allowed = await checkAndIncrementUsage(userProfile.uid || 'guest', CONFIG.AI_DAILY_LIMIT);
+            if (!userProfile?.uid) {
+                throw new Error("You must be logged in to use this feature.");
+            }
+            const allowed = await checkAndIncrementUsage(userProfile.uid, CONFIG.AI_DAILY_LIMIT);
             if (!allowed) {
                 throw new Error(`Daily limit of ${CONFIG.AI_DAILY_LIMIT} requests reached. Please try again tomorrow.`);
             }
