@@ -1,37 +1,50 @@
-# Health Tracker
+# Health & Wellness Tracker Pro
 
-A comprehensive personal health dashboard built with React and TypeScript, designed to help you track lab results, monitor diet, and visualize your health journey.
+A state-of-the-art Personal Health Record (PHR) and wellness dashboard powered by **AI** and **Cloud Sync**. Designed for individuals, coaches, and health admins to track vitals, analyze lab reports, and optimize nutrition.
 
-## 🚀 Key Features
+## 🚀 Key Capabilities
 
-### 🩸 Smart Lab Report Analysis
-- **PDF Parsing**: Automatically extracts test results from standard lab report PDFs.
-- **Intelligent Grouping**: Organizes thousands of test types into intuitive categories (e.g., "Complete Blood Count", "Lipid Profile", "Liver Function").
-- **Smart Detection**: Uses "Name-First" recognition to handle complex layouts, including same-line values (e.g., "Hemoglobin 13.5") and text-based results.
-- **Visual Insights**: Color-coded indicators for High, Low, and Normal values based on reference ranges.
-- **Garbage Filtering**: Automatically filters out footer text, ads, and irrelevant data from reports.
+### 🧠 AI-Powered Insights (Gemini)
+- **Smart Diet Analysis**: Get personalized dietary feedback based on your health profile and recent logs.
+- **Lab Report Interpreter**: Upload PDF lab reports and receive AI-driven explanations for abnormal results, along with food recommendations to improve them.
+- **Meal Vision Scanner**: Snap a photo of your food to automatically identify items and estimate calories/macros.
 
-### 🥗 Diet & Nutrition
-- **Personalized Plans**: View and manage diet plans tailored to your health goals.
-- **Macro Tracking**: (Planned) Monitor daily intake of proteins, fats, and carbs.
+### ☁️ Cloud Sync & Collaboration
+- **Real-Time Data**: All data is synced instantly across devices using **Google Firestore**.
+- **Role-Based Access Control (RBAC)**:
+    - **User**: Personal tracking (Diet, Sleep, Workouts, Labs).
+    - **Coach**: View-only access to assigned user data to provide guidance.
+    - **Admin**: Manage user roles and system access.
+- **Multi-Device**: Access your data seamlessly on Desktop, Tablet, or Mobile.
 
-### 👤 Profile Management
-- **Personal Health Record**: Keep track of vital stats like age, weight, height, and blood group.
+### 🥗 Advanced Nutrition & Fitness
+- **Macro Tracking**: Log daily protein, fats, and carbs with visual progress bars.
+- **Smart Calculations**: Auto-calculates BMI, BMR, and TDEE based on your profile using the Mifflin-St Jeor equation.
+- **Specific Recommendations**: Receive tailored food suggestions (Eat/Avoid lists) based on your health goals (e.g., "Lose Weight", "Gain Muscle").
 
-## 🛠️ Tech Stack
+### 🩸 Intelligent Lab Management
+- **PDF Parsing**: Client-side parsing of standard lab reports using `pdfjs-dist`.
+- **Trend Analysis**: Visualize biomarkers over time (e.g., Hemoglobin, Glucose) with color-coded "High/Low/Normal" indicators.
 
-- **Frontend**: [React](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
-- **Build Tool**: [Vite](https://vitejs.dev/)
-- **Styling**: Vanilla CSS with CSS Variables for theme consistency
-- **PDF Processing**: `pdfjs-dist` for client-side parsing
-- **Icons**: `lucide-react`
-- **Storage**: Browser `IndexedDB` (for PDFs) and `localStorage` (for user data)
+### 📱 Enterprise-Ready UI
+- **PWA Support**: Installable as a native-like app on iOS and Android.
+- **Responsive Design**: Fully optimized for mobile interactions (Touch targets, Bottom/Side navigation).
+- **Secure**: Authentication via Firebase (Google Sign-In / Email), Password Strength enforcement, and secure API key management.
 
-## 📦 Installation
+## 🛠️ Technology Stack
+
+- **Core**: [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- **Build**: [Vite 7](https://vitejs.dev/) + [PWA Plugin](https://vite-pwa-org.netlify.app/)
+- **Cloud Backend**: [Firebase](https://firebase.google.com/) (Auth, Firestore)
+- **AI Engine**: [Google Gemini 2.0 Flash](https://deepmind.google/technologies/gemini/) (Multimodal)
+- **Styling**: Modern CSS Variables, Glassmorphism design, Responsive Grid
+- **Utilities**: `lucide-react` (Icons), `pdfjs-dist` (PDF), `recharts` (Charts)
+
+## 📦 Installation & Setup
 
 1.  **Clone the repository**
     ```bash
-    git clone https://github.com/yourusername/health-tracker.git
+    git clone https://github.com/VishnuPai/health-tracker.git
     cd health-tracker
     ```
 
@@ -40,29 +53,42 @@ A comprehensive personal health dashboard built with React and TypeScript, desig
     npm install
     ```
 
-3.  **Start the development server**
+3.  **Configure Environment**
+    Create a `.env` file in the root directory and add your Firebase and Gemini credentials:
+    ```env
+    VITE_FIREBASE_API_KEY=your_firebase_api_key
+    VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+    VITE_FIREBASE_PROJECT_ID=your_project_id
+    VITE_FIREBASE_STORAGE_BUCKET=your_bucket.appspot.com
+    VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+    VITE_FIREBASE_APP_ID=your_app_id
+    VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
+    ```
+    *Note: The application requires a valid setup in Firebase Console (Auth + Firestore).*
+
+4.  **Start Local Server**
     ```bash
     npm run dev
+    # or for network testing
+    npm run host
     ```
 
-4.  **Build for production**
+5.  **Build for Production**
     ```bash
     npm run build
     ```
 
-## 🛡️ Privacy Focused
-This application runs entirely in your browser.
-- **No Server Uploads**: Your sensitive medical PDFs are processed locally on your device.
-- **Local Storage**: Data is persisted in your browser's LocalStorage and IndexedDB.
+## 🛡️ Security & Privacy
+- **Secure Auth**: Uses secure tokens via Firebase Authentication.
+- **Environment Variables**: Sensitive keys are not hardcoded (ensure `.env` is configured).
+- **Role Protection**: Admin and Coach routes are protected by server-synced role checks.
 
 ## 🤝 Contributing
-Contributions are welcome! Please feel free to submit a Pull Request.
-
 1.  Fork the Project
 2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+3.  Commit your Changes (`git commit -m 'feat: Add AmazingFeature'`)
 4.  Push to the Branch (`git push origin feature/AmazingFeature`)
 5.  Open a Pull Request
 
 ## 📄 License
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License.
