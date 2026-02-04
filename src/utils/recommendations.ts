@@ -16,24 +16,28 @@ export const getDietaryRecommendations = (profile: UserProfile | null, labReport
     if (!profile) return null;
 
     // 1. Calculate BMR (Mifflin-St Jeor Equation)
-    let bmr = 10 * profile.weight + 6.25 * profile.height - 5 * profile.age;
-    if (profile.gender === 'Male') bmr += 5;
+    const weight = profile.weight || 70; // Default or return null?
+    const height = profile.height || 170;
+    const age = profile.age || 30;
+
+    let bmr = 10 * weight + 6.25 * height - 5 * age;
+    if (profile.gender === 'male') bmr += 5;
     else bmr -= 161;
 
     // 2. Activity Multiplier
     const activityMultipliers: Record<string, number> = {
-        'Sedentary': 1.2,
-        'Light': 1.375,
-        'Moderate': 1.55,
-        'Active': 1.725,
-        'Very Active': 1.9
+        'sedentary': 1.2,
+        'light': 1.375,
+        'moderate': 1.55,
+        'active': 1.725,
+        'very_active': 1.9
     };
-    const tdee = bmr * (activityMultipliers[profile.activityLevel] || 1.2);
+    const tdee = bmr * (activityMultipliers[profile.activityLevel || 'sedentary'] || 1.2);
 
     // 3. Goal Adjustment
     let targetCalories = tdee;
-    if (profile.goal === 'Lose Weight') targetCalories -= 500;
-    else if (profile.goal === 'Gain Muscle') targetCalories += 300;
+    if (profile.goal === 'lose_weight') targetCalories -= 500;
+    else if (profile.goal === 'gain_muscle') targetCalories += 300;
 
     // Ensure calories don't drop too low safely
     if (targetCalories < 1200) targetCalories = 1200;
@@ -44,11 +48,11 @@ export const getDietaryRecommendations = (profile: UserProfile | null, labReport
     let fatRatio = 0.25;
     let carbsRatio = 0.5;
 
-    if (profile.goal === 'Gain Muscle') {
+    if (profile.goal === 'gain_muscle') {
         proteinRatio = 0.3;
         carbsRatio = 0.45;
         fatRatio = 0.25;
-    } else if (profile.goal === 'Lose Weight') {
+    } else if (profile.goal === 'lose_weight') {
         proteinRatio = 0.35;
         fatRatio = 0.3;
         carbsRatio = 0.35; // Lower carb for weight loss
@@ -67,11 +71,11 @@ export const getDietaryRecommendations = (profile: UserProfile | null, labReport
     };
 
     // 5. Basic Recommendations based on Goal
-    if (profile.goal === 'Lose Weight') {
+    if (profile.goal === 'lose_weight') {
         plan.recommendations.push("Focus on caloric deficit and high protein to retain muscle.");
         plan.recommendedFoods.push("Leafy greens", "Lean protein (chicken, tofu)", "Whole grains");
         plan.foodsToAvoid.push("Sugary drinks", "Processed snacks", "Deep fried foods");
-    } else if (profile.goal === 'Gain Muscle') {
+    } else if (profile.goal === 'gain_muscle') {
         plan.recommendations.push("Ensure caloric surplus and sufficient protein intake.");
         plan.recommendedFoods.push("Eggs", "Quinoa", "Greek yogurt", "Nuts");
     } else {

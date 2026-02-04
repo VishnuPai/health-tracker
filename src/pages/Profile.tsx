@@ -13,11 +13,11 @@ const Profile = () => {
     // Local state for form
     const [name, setName] = useState(userProfile?.name || '');
     const [age, setAge] = useState(userProfile?.age?.toString() || '');
-    const [gender, setGender] = useState<UserProfile['gender']>(userProfile?.gender || 'Male');
+    const [gender, setGender] = useState<UserProfile['gender']>(userProfile?.gender || 'male');
     const [height, setHeight] = useState(userProfile?.height?.toString() || '');
     const [weight, setWeight] = useState(userProfile?.weight?.toString() || '');
-    const [activityLevel, setActivityLevel] = useState<UserProfile['activityLevel']>(userProfile?.activityLevel || 'Sedentary');
-    const [goal, setGoal] = useState<UserProfile['goal']>(userProfile?.goal || 'Maintain');
+    const [activityLevel, setActivityLevel] = useState<UserProfile['activityLevel']>(userProfile?.activityLevel || 'sedentary');
+    const [goal, setGoal] = useState<UserProfile['goal']>(userProfile?.goal || 'maintain');
 
     // API Key State
     const [keyInput, setKeyInput] = useState(apiKey || '');
@@ -25,13 +25,13 @@ const Profile = () => {
 
     useEffect(() => {
         if (userProfile) {
-            setName(userProfile.name);
-            setAge(userProfile.age.toString());
-            setGender(userProfile.gender);
-            setHeight(userProfile.height.toString());
-            setWeight(userProfile.weight.toString());
-            setActivityLevel(userProfile.activityLevel);
-            setGoal(userProfile.goal);
+            setName(userProfile.name || '');
+            setAge(userProfile.age?.toString() || '');
+            setGender(userProfile.gender || 'male');
+            setHeight(userProfile.height?.toString() || '');
+            setWeight(userProfile.weight?.toString() || '');
+            setActivityLevel(userProfile.activityLevel || 'sedentary');
+            setGoal(userProfile.goal || 'maintain');
         }
     }, [userProfile]);
 
@@ -74,7 +74,7 @@ const Profile = () => {
 
         // Mifflin-St Jeor Equation
         let bmr = 10 * w + 6.25 * h - 5 * a;
-        if (gender === 'Male') bmr += 5;
+        if (gender === 'male') bmr += 5;
         else bmr -= 161;
 
         return Math.round(bmr);
@@ -82,13 +82,13 @@ const Profile = () => {
 
     const calculateTDEE = (bmr: number) => {
         const multipliers: Record<string, number> = {
-            'Sedentary': 1.2,
-            'Light': 1.375,
-            'Moderate': 1.55,
-            'Active': 1.725,
-            'Very Active': 1.9
+            'sedentary': 1.2,
+            'light': 1.375,
+            'moderate': 1.55,
+            'active': 1.725,
+            'very_active': 1.9
         };
-        return Math.round(bmr * (multipliers[activityLevel] || 1.2));
+        return Math.round(bmr * (multipliers[activityLevel || 'sedentary'] || 1.2));
     };
 
     const bmi = calculateBMI();
@@ -134,9 +134,8 @@ const Profile = () => {
                                 value={gender}
                                 onChange={(e) => setGender(e.target.value as any)}
                                 options={[
-                                    { value: 'Male', label: 'Male' },
-                                    { value: 'Female', label: 'Female' },
-                                    { value: 'Other', label: 'Other' }
+                                    { value: 'male', label: 'Male' },
+                                    { value: 'female', label: 'Female' }
                                 ]}
                             />
                         </div>
@@ -168,11 +167,11 @@ const Profile = () => {
                             value={activityLevel}
                             onChange={(e) => setActivityLevel(e.target.value as any)}
                             options={[
-                                { value: 'Sedentary', label: 'Sedentary (Little or no exercise)' },
-                                { value: 'Light', label: 'Light (Exercise 1-3 days/week)' },
-                                { value: 'Moderate', label: 'Moderate (Exercise 4-5 days/week)' },
-                                { value: 'Active', label: 'Active (Daily exercise)' },
-                                { value: 'Very Active', label: 'Very Active (Intense exercise 6-7 days)' },
+                                { value: 'sedentary', label: 'Sedentary (Little or no exercise)' },
+                                { value: 'light', label: 'Light (Exercise 1-3 days/week)' },
+                                { value: 'moderate', label: 'Moderate (Exercise 4-5 days/week)' },
+                                { value: 'active', label: 'Active (Daily exercise)' },
+                                { value: 'very_active', label: 'Very Active (Intense exercise 6-7 days)' },
                             ]}
                         />
 
@@ -181,9 +180,9 @@ const Profile = () => {
                             value={goal}
                             onChange={(e) => setGoal(e.target.value as any)}
                             options={[
-                                { value: 'Lose Weight', label: 'Lose Weight' },
-                                { value: 'Maintain', label: 'Maintain Weight' },
-                                { value: 'Gain Muscle', label: 'Gain Muscle' },
+                                { value: 'lose_weight', label: 'Lose Weight' },
+                                { value: 'maintain', label: 'Maintain Weight' },
+                                { value: 'gain_muscle', label: 'Gain Muscle' },
                             ]}
                         />
 

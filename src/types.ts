@@ -33,13 +33,17 @@ export interface Sleep {
 }
 
 export interface UserProfile {
-    name: string;
-    age: number;
-    gender: 'Male' | 'Female' | 'Other';
-    height: number; // in cm
-    weight: number; // in kg
-    goal: 'Lose Weight' | 'Maintain' | 'Gain Muscle';
-    activityLevel: 'Sedentary' | 'Light' | 'Moderate' | 'Active' | 'Very Active';
+    uid?: string; // Add UID
+    email?: string; // Add Email
+    name?: string;
+    age?: number;
+    weight?: number; // kg
+    height?: number; // cm
+    gender?: 'male' | 'female';
+    activityLevel?: 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
+    goal?: 'lose_weight' | 'maintain' | 'gain_muscle';
+    role?: 'user' | 'coach' | 'admin';
+    apiKey?: string;
 }
 
 export interface LabResult {

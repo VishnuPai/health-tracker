@@ -37,7 +37,7 @@ const Layout = () => {
                 </div>
             </div>
 
-            <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+            <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
             <main style={{ flex: 1, padding: '2rem', overflowY: 'auto' }}>
                 <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
