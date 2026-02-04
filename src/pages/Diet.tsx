@@ -9,6 +9,8 @@ import { Select } from '../components/ui/Select';
 import { Card } from '../components/ui/Card';
 import { getDietaryRecommendations } from '../utils/recommendations';
 import { generateDietaryAnalysis, type AIAnalysisResult } from '../services/gemini';
+import { checkAndIncrementUsage } from '../services/db';
+import { CONFIG } from '../config';
 import { Sparkles, Loader2, AlertCircle } from 'lucide-react';
 
 
@@ -310,14 +312,18 @@ const RecommendationsSection = () => {
     const [error, setError] = useState<string | null>(null);
 
     const handleGenerateInsights = async () => {
-        if (!apiKey) {
-            setError('Please save your Google Gemini API Key in Profile settings first.');
-            return;
-        }
+        if (!userProfile) return;
+
         setLoading(true);
         setError(null);
         try {
-            const result = await generateDietaryAnalysis(userProfile, labReports, dietEntries, apiKey);
+            // Rate Limit Check
+            const allowed = await checkAndIncrementUsage(userProfile.uid || 'guest', CONFIG.AI_DAILY_LIMIT);
+            if (!allowed) {
+                throw new Error(`Daily limit of ${CONFIG.AI_DAILY_LIMIT} requests reached. Please try again tomorrow.`);
+            }
+
+            const result = await generateDietaryAnalysis(userProfile, labReports, dietEntries);
             setAiAnalysis(result);
         } catch (err: any) {
             setError(err.message || 'Failed to generate insights');

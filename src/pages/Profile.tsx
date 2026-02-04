@@ -192,41 +192,18 @@ const Profile = () => {
                     </form>
                 </Card>
 
-                {/* AI Settings */}
+                {/* Usage Stats (Replaces AI Settings) */}
                 <Card>
                     <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <Key size={20} /> AI Settings
+                        <Key size={20} /> AI Usage
                     </h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                            Enter your Google Gemini API Key to enable AI-powered insights.
-                            Your key is stored locally in your browser.
+                            You are on the standard plan.
                         </p>
-                        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>
-                            <div style={{ flex: 1 }}>
-                                <Input
-                                    label="Gemini API Key"
-                                    type={showKey ? 'text' : 'password'}
-                                    value={keyInput}
-                                    onChange={(e) => setKeyInput(e.target.value)}
-                                    placeholder="Enter API Key"
-                                />
-                            </div>
-                            <Button
-                                variant="outline"
-                                style={{ height: '46px' }}
-                                onClick={() => setShowKey(!showKey)}
-                            >
-                                {showKey ? 'Hide' : 'Show'}
-                            </Button>
-                        </div>
-                        <Button
-                            onClick={() => updateApiKey(keyInput.trim())}
-                            variant="primary"
-                            disabled={keyInput.trim() === apiKey}
-                        >
-                            {keyInput.trim() === apiKey ? 'Saved' : 'Save API Key'}
-                        </Button>
+                        <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+                            Daily Limit: 5 requests
+                        </p>
                     </div>
                 </Card>
 

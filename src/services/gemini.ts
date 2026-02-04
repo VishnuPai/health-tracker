@@ -1,6 +1,8 @@
 import type { UserProfile, LabReport, Diet } from '../types';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+const API_KEY = import.meta.env.VITE_GOOGLE_GEN_AI_KEY || import.meta.env.VITE_FIREBASE_API_KEY;
+
 export interface AIAnalysisResult {
     analysis: string;
     caloricRecommendation?: number;
@@ -16,11 +18,10 @@ const getErrorModelName = (error: any) => {
 export const generateDietaryAnalysis = async (
     profile: UserProfile | null,
     labReports: LabReport[],
-    dietHistory: Diet[],
-    apiKey: string
+    dietHistory: Diet[]
 ): Promise<AIAnalysisResult> => {
-    if (!apiKey) {
-        throw new Error("API Key is missing");
+    if (!API_KEY) {
+        throw new Error("System API Key is missing. Please check configuration.");
     }
 
     if (!profile) {
@@ -73,7 +74,7 @@ export const generateDietaryAnalysis = async (
     `;
 
     try {
-        const genAI = new GoogleGenerativeAI(apiKey);
+        const genAI = new GoogleGenerativeAI(API_KEY);
         // Using specific model version for stability (Gemini 2.0 Flash)
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
@@ -97,7 +98,7 @@ export const generateDietaryAnalysis = async (
         if ((error.message.includes('404') || error.message.includes('not found')) && !getErrorModelName(error).includes('gemini-2.0-flash-lite')) {
             console.log("Attempting fallback to gemini-2.0-flash-lite...");
             try {
-                const genAI = new GoogleGenerativeAI(apiKey);
+                const genAI = new GoogleGenerativeAI(API_KEY);
                 const fallbackModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
                 const result = await fallbackModel.generateContent(prompt);
                 const response = await result.response;
@@ -117,6 +118,8 @@ export const generateDietaryAnalysis = async (
             msg = "Model not found or API Key invalid. 1) Ensure 'Generative Language API' is enabled. 2) Check if your API Key is for 'Google AI Studio' (not Vertex AI).";
         } else if (msg.includes('400')) {
             msg = "Bad Request. Your API key might be invalid or restrictions are blocking this request.";
+        } else if (msg.includes('429')) {
+            msg = "System is busy (Rate Limit). Please try again later.";
         }
 
         if (fallbackErrorMsg) {
@@ -140,12 +143,11 @@ export interface ScannedFoodResult {
 
 export const analyzeFoodImage = async (
     base64Data: string,
-    mimeType: string,
-    apiKey: string
+    mimeType: string
 ): Promise<ScannedFoodResult> => {
-    if (!apiKey) throw new Error("API Key is missing");
+    if (!API_KEY) throw new Error("System API Key is missing");
 
-    const genAI = new GoogleGenerativeAI(apiKey);
+    const genAI = new GoogleGenerativeAI(API_KEY);
     // Use gemini-2.0-flash for vision capabilities
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
@@ -192,12 +194,11 @@ export const analyzeFoodImage = async (
 };
 
 export const generateLabReportAnalysis = async (
-    report: LabReport,
-    apiKey: string
+    report: LabReport
 ): Promise<AIAnalysisResult> => {
-    if (!apiKey) throw new Error("API Key is missing");
+    if (!API_KEY) throw new Error("System API Key is missing");
 
-    const genAI = new GoogleGenerativeAI(apiKey);
+    const genAI = new GoogleGenerativeAI(API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     const resultsText = report.results

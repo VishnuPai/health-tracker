@@ -1,4 +1,4 @@
-import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs, runTransaction } from 'firebase/firestore';
 import { app } from './firebase';
 
 import type { UserProfile } from '../types';
@@ -36,4 +36,53 @@ export const getAllUsers = async () => {
     const usersRef = collection(db, 'users');
     const snapshot = await getDocs(usersRef);
     return snapshot.docs.map(doc => doc.data() as UserProfile);
+};
+
+// AI Usage Tracking
+export const getDailyUsage = async (uid: string): Promise<number> => {
+    const today = new Date().toISOString().split('T')[0];
+    const usageRef = doc(db, 'users', uid, 'usage', today);
+    const snap = await getDoc(usageRef);
+
+    if (snap.exists()) {
+        return snap.data().total || 0;
+    }
+    return 0;
+};
+
+export const checkAndIncrementUsage = async (uid: string, limit: number): Promise<boolean> => {
+    const today = new Date().toISOString().split('T')[0];
+    const usageRef = doc(db, 'users', uid, 'usage', today);
+
+    try {
+        await runTransaction(db, async (transaction) => {
+            const usageDoc = await transaction.get(usageRef);
+            let currentTotal = 0;
+
+            if (usageDoc.exists()) {
+                currentTotal = usageDoc.data().total || 0;
+            }
+
+
+
+            if (currentTotal >= limit) {
+                // Limit reached, throw error to break transaction
+                throw new Error("Limit Reached");
+            }
+
+            // Increment
+            transaction.set(usageRef, {
+                total: currentTotal + 1,
+                lastUpdated: new Date().toISOString()
+            }, { merge: true });
+        });
+        return true;
+    } catch (e: any) {
+        if (e.message === "Limit Reached") {
+            return false;
+        }
+        console.error("Usage Check Error:", e);
+        // Default to allowing if DB fails? Or blocking? Blocking is safer for costs.
+        return false;
+    }
 };

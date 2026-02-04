@@ -10,6 +10,8 @@ import { Input } from '../components/ui/Input';
 import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { generateLabReportAnalysis, type AIAnalysisResult } from '../services/gemini';
+import { checkAndIncrementUsage } from '../services/db';
+import { CONFIG } from '../config';
 import { Sparkles, Loader2 } from 'lucide-react';
 
 
@@ -550,22 +552,26 @@ const ReportCard = ({ report, onDelete, onViewPdf, onEdit }: {
         return acc;
     }, {} as Record<string, LabResult[]>);
 
-    const { apiKey } = useHealth();
+    const { userProfile } = useHealth(); // Get userProfile to access UID
     const [aiAnalysis, setAiAnalysis] = useState<AIAnalysisResult | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const handleAnalyze = async (e: React.MouseEvent) => {
         e.stopPropagation();
-        if (!apiKey) {
-            alert("Please save your Gemini API Key in Profile settings first.");
-            return;
-        }
+
         setExpanded(true);
         setLoading(true);
         setError(null);
         try {
-            const result = await generateLabReportAnalysis(report, apiKey);
+            // Rate Limit Check
+            const uid = userProfile?.uid || 'guest';
+            const allowed = await checkAndIncrementUsage(uid, CONFIG.AI_DAILY_LIMIT);
+            if (!allowed) {
+                throw new Error(`Daily limit of ${CONFIG.AI_DAILY_LIMIT} requests reached. Please try again tomorrow.`);
+            }
+
+            const result = await generateLabReportAnalysis(report);
             setAiAnalysis(result);
         } catch (err: any) {
             setError(err.message);

@@ -24,8 +24,7 @@ interface HealthContextType {
     updateSleepEntry: (sleep: Sleep) => void;
     deleteSleepEntry: (id: string) => void;
     clearAllData: () => void; // Deprecated in cloud mode, but kept for interface
-    apiKey: string;
-    updateApiKey: (key: string) => void;
+
     user: User | null;
     loading: boolean;
     role: 'user' | 'coach' | 'admin';
@@ -45,7 +44,7 @@ export const HealthProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     const [dietEntries, setDietEntries] = useState<Diet[]>([]);
     const [sleepEntries, setSleepEntries] = useState<Sleep[]>([]);
     const [labReports, setLabReports] = useState<LabReport[]>([]);
-    const [apiKey, setApiKey] = useState<string>('');
+
 
     // 1. Auth Listener
     useEffect(() => {
@@ -85,7 +84,7 @@ export const HealthProvider: React.FC<{ children: ReactNode }> = ({ children }) 
                 const data = doc.data() as UserProfile;
                 setUserProfile(data);
                 setRole(data.role || 'user');
-                if (data.apiKey) setApiKey(data.apiKey);
+
             }
         });
 
@@ -128,12 +127,7 @@ export const HealthProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         await updateDbProfile(user.uid, data);
     };
 
-    const updateApiKeyHandler = async (key: string) => {
-        setApiKey(key);
-        if (user) {
-            await updateDbProfile(user.uid, { apiKey: key });
-        }
-    };
+
 
     // Generic helper for adding/updating/deleting docs in subcollections
     const saveData = async (collectionName: string, data: any) => {
@@ -174,8 +168,6 @@ export const HealthProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         updateSleepEntry: (s: Sleep) => saveData('sleep', s),
         deleteSleepEntry: (id: string) => deleteData('sleep', id),
         clearAllData: () => { }, // No-op in cloud
-        apiKey,
-        updateApiKey: updateApiKeyHandler,
         user,
         loading,
         role
