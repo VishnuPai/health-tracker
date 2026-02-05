@@ -12,17 +12,17 @@ interface HealthContextType {
     userProfile: UserProfile | null;
     labReports: LabReport[];
     updateUserProfile: (profile: Partial<UserProfile>) => Promise<void>;
-    addLabReport: (report: LabReport) => void;
-    deleteLabReport: (id: string) => void;
-    addWorkout: (workout: Workout) => void;
-    updateWorkout: (workout: Workout) => void;
-    deleteWorkout: (id: string) => void;
-    addDietEntry: (diet: Diet) => void;
-    updateDietEntry: (diet: Diet) => void;
-    deleteDietEntry: (id: string) => void;
-    addSleepEntry: (sleep: Sleep) => void;
-    updateSleepEntry: (sleep: Sleep) => void;
-    deleteSleepEntry: (id: string) => void;
+    addLabReport: (report: LabReport) => Promise<void>;
+    deleteLabReport: (id: string) => Promise<void>;
+    addWorkout: (workout: Workout) => Promise<void>;
+    updateWorkout: (workout: Workout) => Promise<void>;
+    deleteWorkout: (id: string) => Promise<void>;
+    addDietEntry: (diet: Diet) => Promise<void>;
+    updateDietEntry: (diet: Diet) => Promise<void>;
+    deleteDietEntry: (id: string) => Promise<void>;
+    addSleepEntry: (sleep: Sleep) => Promise<void>;
+    updateSleepEntry: (sleep: Sleep) => Promise<void>;
+    deleteSleepEntry: (id: string) => Promise<void>;
     clearAllData: () => void; // Deprecated in cloud mode, but kept for interface
 
     user: User | null;
@@ -81,12 +81,15 @@ export const HealthProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         if (!user) return;
 
         // Listen to User Profile changes (e.g. Role updates)
+        // Listen to User Profile changes (e.g. Role updates)
         const unsubProfile = onSnapshot(doc(db, 'users', user.uid), (doc) => {
             if (doc.exists()) {
                 const data = doc.data() as UserProfile;
-                setUserProfile(data);
-                setRole(data.role || 'user');
-
+                // Ensure UID is present (backfill from auth if missing in doc)
+                const fullProfile = { ...data, uid: data.uid || user.uid };
+                setUserProfile(fullProfile);
+                setRole(fullProfile.role || 'user');
+                console.log("[AuthDebug] Profile updated from snapshot:", fullProfile);
             }
         });
 
@@ -127,7 +130,7 @@ export const HealthProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     const updateUserProfileHandler = async (data: Partial<UserProfile>) => {
         if (!user) {
             console.error("[AuthDebug] Cannot update profile: No user logged in.");
-            return;
+            throw new Error("No user logged in. Please refresh and try again.");
         }
         console.log("[AuthDebug] Updating profile for:", user.uid, data);
         try {
@@ -145,17 +148,26 @@ export const HealthProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
     // Generic helper for adding/updating/deleting docs in subcollections
     const saveData = async (collectionName: string, data: any) => {
-        if (!user) return;
-        // Ensure data has an ID (most of our types do, but if new, might need generation.
-        // For now, our app generates IDs on creation in the UI/Service before passing here,
-        // or we use the Date timestamp as ID in some places.
-        // Let's assume data.id exists as per our types.)
+        if (!user) {
+            console.error(`[DBDebug] Cannot save to ${collectionName}: No user logged in.`);
+            throw new Error(`Cannot save to ${collectionName}: No user logged in.`);
+        }
         if (!data.id) {
-            console.error("Attempted to save data without ID:", data);
+            console.error(`[DBDebug] Attempted to save to ${collectionName} without ID:`, data);
             return;
         }
-        const ref = doc(db, `users/${user.uid}/${collectionName}`, data.id);
-        await setDoc(ref, data);
+        console.log(`[DBDebug] Saving to ${collectionName}:`, data);
+        try {
+            // Firestore does not like 'undefined' values.
+            // We strip them out by JSON-cycling.
+            const cleanData = JSON.parse(JSON.stringify(data));
+            const ref = doc(db, `users/${user.uid}/${collectionName}`, data.id);
+            await setDoc(ref, cleanData);
+            console.log(`[DBDebug] Saved to ${collectionName} successfully.`);
+        } catch (e) {
+            console.error(`[DBDebug] Error saving to ${collectionName}:`, e);
+            throw e;
+        }
     };
 
     const deleteData = async (collectionName: string, id: string) => {

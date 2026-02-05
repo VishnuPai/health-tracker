@@ -47,34 +47,7 @@ const AdminDashboard = () => {
                     <h2>Access Denied</h2>
                     <p>You must be an admin to view this page.</p>
 
-                    <div style={{ marginTop: '2rem', padding: '1rem', border: '1px dashed #ccc', borderRadius: '8px' }}>
-                        <p style={{ fontSize: '0.8rem', color: '#666', marginBottom: '0.5rem' }}>Developer Helper:</p>
-                        <Button
-                            variant="ghost"
-                            onClick={async () => {
-                                console.log("Dev button clicked. User:", user);
-                                if (!user || !user.uid) {
-                                    alert("Error: No user found. Are you logged in?");
-                                    return;
-                                }
 
-                                try {
-                                    const confirm = window.confirm(`Promote user ${user.email} (${user.uid}) to Admin?`);
-                                    if (!confirm) return;
-
-                                    await handleRoleChange(user.uid, 'admin');
-                                    alert("Success! Role updated to Admin. Reloading page...");
-                                    window.location.reload();
-                                } catch (e: any) {
-                                    console.error("Promotion failed:", e);
-                                    alert("Error promoting user: " + (e?.message || JSON.stringify(e)));
-                                }
-                            }}
-                            style={{ border: '2px dashed red', color: 'red', width: '100%' }}
-                        >
-                            (Dev) Make Me Admin
-                        </Button>
-                    </div>
                 </Card>
             </div>
         );

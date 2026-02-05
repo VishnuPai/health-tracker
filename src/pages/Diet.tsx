@@ -16,7 +16,7 @@ import { Sparkles, Loader2, AlertCircle } from 'lucide-react';
 
 const DietPage = () => {
     // const { apiKey } = useHealth();
-    const { dietEntries, addDietEntry, updateDietEntry, deleteDietEntry } = useHealth();
+    const { dietEntries, addDietEntry, updateDietEntry, deleteDietEntry, user, userProfile } = useHealth();
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isScannerOpen, setIsScannerOpen] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -318,18 +318,18 @@ const RecommendationsSection = () => {
         setError(null);
         try {
             // Rate Limit Check
-            if (!userProfile?.uid) {
-                throw new Error("You must be logged in to use this feature.");
-            }
-            const allowed = await checkAndIncrementUsage(userProfile.uid, CONFIG.AI_DAILY_LIMIT);
-            if (!allowed) {
-                throw new Error(`Daily limit of ${CONFIG.AI_DAILY_LIMIT} requests reached. Please try again tomorrow.`);
-            }
+            // Rate Limit Check
+            // Rate Limit Check Removed as per user request
+            // const uid = userProfile?.uid || user?.uid;
+            // if (!uid) throw new Error("You must be logged in to use this feature (Session Invalid).");
+            // const allowed = await checkAndIncrementUsage(uid, CONFIG.AI_DAILY_LIMIT); ...
 
             const result = await generateDietaryAnalysis(userProfile, labReports, dietEntries);
             setAiAnalysis(result);
         } catch (err: any) {
+            console.error("AI Error:", err);
             setError(err.message || 'Failed to generate insights');
+            alert(`AI Error: ${err.message}`);
         } finally {
             setLoading(false);
         }

@@ -1,7 +1,10 @@
 import type { UserProfile, LabReport, Diet } from '../types';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const API_KEY = import.meta.env.VITE_GOOGLE_GEN_AI_KEY || import.meta.env.VITE_FIREBASE_API_KEY;
+const API_KEY = import.meta.env.VITE_GOOGLE_GEN_AI_KEY;
+
+// Debug Log (Do not log the full key in production!)
+console.log(`[GeminiDebug] API Key Status: ${API_KEY ? 'Present (' + API_KEY.slice(0, 4) + '...)' : 'MISSING'}`);
 
 export interface AIAnalysisResult {
     analysis: string;

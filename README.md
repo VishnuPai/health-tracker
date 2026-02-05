@@ -83,6 +83,28 @@ A state-of-the-art Personal Health Record (PHR) and wellness dashboard powered b
 - **Environment Variables**: Sensitive keys are not hardcoded (ensure `.env` is configured).
 - **Role Protection**: Admin and Coach routes are protected by server-synced role checks.
 
+## 👥 User Management & Workflows
+
+### 1. Bootstrapping the First Admin
+Since the app is secure by default, there is no public "Sign Up as Admin" page. To create the **First Admin**:
+1.  Sign up as a regular user via the Register page.
+2.  Go to the **Firebase Console** > **Firestore Database**.
+3.  Find the `users` collection and locate your User ID document.
+4.  Manually change the `role` field from `"user"` to `"admin"`.
+5.  Refresh the app. You now have access to the **Admin Panel**.
+
+### 2. Onboarding Coaches
+1.  Ask the coach to sign up as a regular user.
+2.  Log in as an **Admin**.
+3.  Navigate to the **Admin Panel** (in Sidebar).
+4.  Find the user in the list and click **"Promote to Coach"**.
+5.  The user will instantly have access to the **Coach Dashboard**.
+
+### 3. Client Management
+- **Coaches** can view a read-only list of all users to track client goals.
+- **Admins** have full control to modifications and role management.
+- **Users** have strict data privacy and can only see their own personal health data.
+
 ## 🤝 Contributing
 1.  Fork the Project
 2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)

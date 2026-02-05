@@ -17,18 +17,31 @@ export interface ParsedLabResult {
 }
 
 export const extractTextFromPdf = async (file: File): Promise<string[]> => {
-    const arrayBuffer = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
-    let allLines: string[] = [];
+    console.log("[PDFDebug] Starting PDF extraction for:", file.name);
+    try {
+        const arrayBuffer = await file.arrayBuffer();
+        console.log("[PDFDebug] File buffer read. Size:", arrayBuffer.byteLength);
 
-    for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i);
-        const textContent = await page.getTextContent();
-        const pageStrings = textContent.items.map((item: any) => item.str.trim()).filter(s => s.length > 0);
-        allLines = [...allLines, ...pageStrings];
+        console.log("[PDFDebug] Worker Source:", pdfjsLib.GlobalWorkerOptions.workerSrc);
+
+        const loadingTask = pdfjsLib.getDocument(arrayBuffer);
+        const pdf = await loadingTask.promise;
+        console.log("[PDFDebug] PDF Document Loaded. Pages:", pdf.numPages);
+
+        let allLines: string[] = [];
+
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            const pageStrings = textContent.items.map((item: any) => item.str.trim()).filter(s => s.length > 0);
+            allLines = [...allLines, ...pageStrings];
+        }
+        console.log("[PDFDebug] Text extracted. Lines:", allLines.length);
+        return allLines;
+    } catch (e) {
+        console.error("[PDFDebug] Extraction Critical Error:", e);
+        throw e;
     }
-
-    return allLines;
 };
 
 export const parseLabResults = (lines: string[]): ParsedLabResult[] => {

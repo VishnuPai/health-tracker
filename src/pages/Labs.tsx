@@ -17,7 +17,7 @@ import { Sparkles, Loader2 } from 'lucide-react';
 
 
 const Labs = () => {
-    const { labReports, addLabReport, deleteLabReport: contextDeleteReport } = useHealth();
+    const { labReports, addLabReport, deleteLabReport: contextDeleteReport, userProfile, user } = useHealth();
 
     // Wrapper to handle IDB deletion
     const handleDeleteReport = async (id: string) => {
@@ -140,7 +140,7 @@ const Labs = () => {
             }
         } catch (error) {
             console.error('PDF Parse Error:', error);
-            alert('Failed to read PDF file.');
+            alert(`Failed to read PDF file: ${error.message}`);
         } finally {
             setIsParsing(false);
             // Reset input
@@ -552,7 +552,7 @@ const ReportCard = ({ report, onDelete, onViewPdf, onEdit }: {
         return acc;
     }, {} as Record<string, LabResult[]>);
 
-    const { userProfile } = useHealth(); // Get userProfile to access UID
+    const { userProfile, user } = useHealth(); // Get userProfile to access UID
     const [aiAnalysis, setAiAnalysis] = useState<AIAnalysisResult | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -564,20 +564,16 @@ const ReportCard = ({ report, onDelete, onViewPdf, onEdit }: {
         setLoading(true);
         setError(null);
         try {
-            // Rate Limit Check
-            const uid = userProfile?.uid;
-            if (!uid) {
-                throw new Error("You must be logged in to use this feature.");
-            }
-            const allowed = await checkAndIncrementUsage(uid, CONFIG.AI_DAILY_LIMIT);
-            if (!allowed) {
-                throw new Error(`Daily limit of ${CONFIG.AI_DAILY_LIMIT} requests reached. Please try again tomorrow.`);
-            }
+            // Rate Limit Check Removed
+            // const uid = userProfile?.uid || user?.uid;
+            // ...
 
             const result = await generateLabReportAnalysis(report);
             setAiAnalysis(result);
         } catch (err: any) {
+            console.error("AI Error:", err);
             setError(err.message);
+            alert(`AI Error: ${err.message}`);
         } finally {
             setLoading(false);
         }

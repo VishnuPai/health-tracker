@@ -1,4 +1,4 @@
-import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs, runTransaction } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, getDoc, collection, getDocs, runTransaction } from 'firebase/firestore';
 import { app } from './firebase';
 
 import type { UserProfile } from '../types';
@@ -37,7 +37,8 @@ export const initializeUser = async (uid: string, email: string) => {
 // Update user profile
 export const updateUserProfile = async (uid: string, data: Partial<UserProfile>) => {
     const userRef = doc(db, 'users', uid);
-    await updateDoc(userRef, data);
+    // Use setDoc with merge: true to handle cases where the doc might not exist yet
+    await setDoc(userRef, data, { merge: true });
 };
 
 // Fetch all users (Admin/Coach view)

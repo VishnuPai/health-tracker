@@ -23,38 +23,44 @@ const Workouts = () => {
     const [pace, setPace] = useState('');
     const [laps, setLaps] = useState('');
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const workoutData = {
-            activity,
-            durationMinutes: Number(duration),
-            intensity,
-            caloriesBurned: calories ? Number(calories) : undefined,
-            distance: distance ? Number(distance) : undefined,
-            pace: pace ? Number(pace) : undefined,
-            laps: laps ? Number(laps) : undefined,
-        };
+        try {
+            const workoutData = {
+                activity,
+                durationMinutes: Number(duration),
+                intensity,
+                caloriesBurned: calories ? Number(calories) : undefined,
+                distance: distance ? Number(distance) : undefined,
+                pace: pace ? Number(pace) : undefined,
+                laps: laps ? Number(laps) : undefined,
+            };
 
-        if (editingId) {
-            // Update existing
-            const updatedWorkout: Workout = {
-                id: editingId,
-                date: workouts.find(w => w.id === editingId)?.date || getTodayString(), // Keep original date or default
-                ...workoutData
-            };
-            updateWorkout(updatedWorkout);
-        } else {
-            // Create new
-            const newWorkout: Workout = {
-                id: Date.now().toString(),
-                date: getTodayString(),
-                ...workoutData
-            };
-            addWorkout(newWorkout);
+            if (editingId) {
+                // Update existing
+                const updatedWorkout: Workout = {
+                    id: editingId,
+                    date: workouts.find(w => w.id === editingId)?.date || getTodayString(), // Keep original date or default
+                    ...workoutData
+                };
+                await updateWorkout(updatedWorkout);
+            } else {
+                // Create new
+                const newWorkout: Workout = {
+                    id: Date.now().toString(),
+                    date: getTodayString(),
+                    ...workoutData
+                };
+                await addWorkout(newWorkout);
+            }
+
+            closeForm();
+            alert("Workout saved successfully!");
+        } catch (err: any) {
+            console.error("Failed to save workout:", err);
+            alert(`Failed to save workout: ${err.message}`);
         }
-
-        closeForm();
     };
 
     const handleEdit = (workout: Workout) => {

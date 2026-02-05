@@ -197,19 +197,7 @@ const Profile = () => {
                 </Card>
 
                 {/* Usage Stats (Replaces AI Settings) */}
-                <Card>
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <Key size={20} /> AI Usage
-                    </h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                            You are on the standard plan.
-                        </p>
-                        <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                            Daily Limit: 5 requests
-                        </p>
-                    </div>
-                </Card>
+                {/* Usage Stats Removed */}
 
                 {/* Indicators Column */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -268,8 +256,9 @@ const Profile = () => {
                             <p style={{ color: 'var(--text-muted)', textAlign: 'center' }}>Enter all details to calculate daily calorie needs.</p>
                         )}
                     </Card>
-
                 </div>
+
+                {/* Developer Options Removed */}
             </div>
         </div>
     );
