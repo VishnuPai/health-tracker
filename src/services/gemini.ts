@@ -18,6 +18,25 @@ const getErrorModelName = (error: any) => {
     return '';
 };
 
+// Helper to robustly parse JSON from AI response
+const cleanAndParseJSON = (text: string): any => {
+    try {
+        // 1. Try direct parse
+        return JSON.parse(text);
+    } catch (e) {
+        // 2. Try extracting JSON block
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+            try {
+                return JSON.parse(jsonMatch[0]);
+            } catch (e2) {
+                console.error("Failed to parse extracted JSON block:", e2);
+            }
+        }
+        throw new Error(`Failed to parse AI response as JSON. Raw text: ${text.slice(0, 100)}...`);
+    }
+};
+
 export const generateDietaryAnalysis = async (
     profile: UserProfile | null,
     labReports: LabReport[],
@@ -79,7 +98,10 @@ export const generateDietaryAnalysis = async (
     try {
         const genAI = new GoogleGenerativeAI(API_KEY);
         // Using specific model version for stability (Gemini 2.0 Flash)
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        const model = genAI.getGenerativeModel({
+            model: "gemini-2.0-flash",
+            generationConfig: { responseMimeType: "application/json" } // Force JSON
+        });
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
@@ -89,8 +111,7 @@ export const generateDietaryAnalysis = async (
             throw new Error('Empty response from AI');
         }
 
-        const jsonStr = text.replace(/```json\n?|\n?```/g, '').trim();
-        return JSON.parse(jsonStr);
+        return cleanAndParseJSON(text);
 
     } catch (error: any) {
         console.error("AI Generation Error Details:", error);
@@ -102,13 +123,15 @@ export const generateDietaryAnalysis = async (
             console.log("Attempting fallback to gemini-2.0-flash-lite...");
             try {
                 const genAI = new GoogleGenerativeAI(API_KEY);
-                const fallbackModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
+                const fallbackModel = genAI.getGenerativeModel({
+                    model: "gemini-2.0-flash-lite",
+                    generationConfig: { responseMimeType: "application/json" }
+                });
                 const result = await fallbackModel.generateContent(prompt);
                 const response = await result.response;
                 const text = response.text();
                 if (text) {
-                    const jsonStr = text.replace(/```json\n?|\n?```/g, '').trim();
-                    return JSON.parse(jsonStr);
+                    return cleanAndParseJSON(text);
                 }
             } catch (fallbackError: any) {
                 console.error("Fallback Error:", fallbackError);
@@ -152,7 +175,10 @@ export const analyzeFoodImage = async (
 
     const genAI = new GoogleGenerativeAI(API_KEY);
     // Use gemini-2.0-flash for vision capabilities
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({
+        model: "gemini-2.0-flash",
+        generationConfig: { responseMimeType: "application/json" }
+    });
 
     const prompt = `
     Analyze this food image. Identify the items and estimate the total nutritional content.
@@ -181,8 +207,7 @@ export const analyzeFoodImage = async (
 
         const response = await result.response;
         const text = response.text();
-        const jsonStr = text.replace(/```json\n?|\n?```/g, '').trim();
-        return JSON.parse(jsonStr);
+        return cleanAndParseJSON(text);
 
     } catch (error: any) {
         console.error("Vision Analysis Error:", error);
@@ -202,7 +227,10 @@ export const generateLabReportAnalysis = async (
     if (!API_KEY) throw new Error("System API Key is missing");
 
     const genAI = new GoogleGenerativeAI(API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({
+        model: "gemini-2.0-flash",
+        generationConfig: { responseMimeType: "application/json" }
+    });
 
     const resultsText = report.results
         .map(r => `${r.testName}: ${r.value} ${r.unit} (Ref: ${r.minRange}-${r.maxRange})`)
@@ -232,8 +260,7 @@ export const generateLabReportAnalysis = async (
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const text = response.text();
-        const jsonStr = text.replace(/```json\n?|\n?```/g, '').trim();
-        return JSON.parse(jsonStr);
+        return cleanAndParseJSON(text);
     } catch (error: any) {
         console.error("Lab Analysis Error:", error);
         throw new Error(error.message || "Failed to analyze lab report");

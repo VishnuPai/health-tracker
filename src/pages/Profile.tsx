@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useHealth } from '../context/HealthContext';
-import { User, Activity, Scale, Ruler, Calculator, Save, Key } from 'lucide-react';
+import { User, Activity, Scale, Ruler, Calculator, Save } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Select } from '../components/ui/Select';

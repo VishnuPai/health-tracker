@@ -10,14 +10,12 @@ import { Input } from '../components/ui/Input';
 import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { generateLabReportAnalysis, type AIAnalysisResult } from '../services/gemini';
-import { checkAndIncrementUsage } from '../services/db';
-import { CONFIG } from '../config';
 import { Sparkles, Loader2 } from 'lucide-react';
 
 
 
 const Labs = () => {
-    const { labReports, addLabReport, deleteLabReport: contextDeleteReport, userProfile, user } = useHealth();
+    const { labReports, addLabReport, deleteLabReport: contextDeleteReport } = useHealth();
 
     // Wrapper to handle IDB deletion
     const handleDeleteReport = async (id: string) => {
@@ -138,7 +136,7 @@ const Labs = () => {
                 setIsImportModalOpen(true);
                 setShowRawText(false);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('PDF Parse Error:', error);
             alert(`Failed to read PDF file: ${error.message}`);
         } finally {
@@ -552,7 +550,7 @@ const ReportCard = ({ report, onDelete, onViewPdf, onEdit }: {
         return acc;
     }, {} as Record<string, LabResult[]>);
 
-    const { userProfile, user } = useHealth(); // Get userProfile to access UID
+    // const { userProfile, user } = useHealth(); // Unused
     const [aiAnalysis, setAiAnalysis] = useState<AIAnalysisResult | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);

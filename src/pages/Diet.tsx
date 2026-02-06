@@ -9,14 +9,12 @@ import { Select } from '../components/ui/Select';
 import { Card } from '../components/ui/Card';
 import { getDietaryRecommendations } from '../utils/recommendations';
 import { generateDietaryAnalysis, type AIAnalysisResult } from '../services/gemini';
-import { checkAndIncrementUsage } from '../services/db';
-import { CONFIG } from '../config';
 import { Sparkles, Loader2, AlertCircle } from 'lucide-react';
 
 
 const DietPage = () => {
     // const { apiKey } = useHealth();
-    const { dietEntries, addDietEntry, updateDietEntry, deleteDietEntry, user, userProfile } = useHealth();
+    const { dietEntries, addDietEntry, updateDietEntry, deleteDietEntry } = useHealth();
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isScannerOpen, setIsScannerOpen] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
