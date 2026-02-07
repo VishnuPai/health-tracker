@@ -9,9 +9,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: npm install
-      - run: npm run build
-      - name: Verify Build Output
-        run: ls -R dist
+      - name: Build Project
+        run: npm run build
         env:
           VITE_FIREBASE_API_KEY: '${{ secrets.VITE_FIREBASE_API_KEY }}'
           VITE_FIREBASE_AUTH_DOMAIN: '${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}'
@@ -21,6 +20,8 @@ jobs:
           VITE_FIREBASE_APP_ID: '${{ secrets.VITE_FIREBASE_APP_ID }}'
           VITE_FIREBASE_MEASUREMENT_ID: '${{ secrets.VITE_FIREBASE_MEASUREMENT_ID }}'
           VITE_GOOGLE_GEN_AI_KEY: '${{ secrets.VITE_GOOGLE_GEN_AI_KEY }}'
+      - name: Verify Build Output
+        run: ls -R dist
       - name: Deploy to Firebase
         run: |
           echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_HEALTH_TRACKER }}' > service-account.json
