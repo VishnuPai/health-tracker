@@ -8,8 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: npm ci
+      - run: npm install
       - run: npm run build
+      - name: Verify Build Output
+        run: ls -R dist
         env:
           VITE_FIREBASE_API_KEY: '${{ secrets.VITE_FIREBASE_API_KEY }}'
           VITE_FIREBASE_AUTH_DOMAIN: '${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}'
