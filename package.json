@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "host": "vite --host",
-    "build": "tsc -b && vite build",
+    "security-check": "grep -q 'cdn.sheetjs.com' package.json || (echo 'ERROR: Insecure xlsx version detected!' && exit 1)",
+    "build": "npm run security-check && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -19,7 +20,7 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.13.0",
-    "xlsx": "^0.18.5"
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.2/xlsx-0.20.2.tgz"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

@@ -25,7 +25,7 @@ jobs:
       - name: Deploy to Firebase
         run: |
           echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_HEALTH_TRACKER }}' > service-account.json
-          export GOOGLE_APPLICATION_CREDENTIALS=service-account.json
-          npx firebase-tools deploy --only hosting --public dist --project health-tracker-app-1cc9d --json
+          export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/service-account.json
+          npx firebase-tools deploy --only hosting --project health-tracker-app-1cc9d --json
         env:
           VITE_FIREBASE_API_KEY: '${{ secrets.VITE_FIREBASE_API_KEY }}'
