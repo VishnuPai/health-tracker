@@ -22,10 +22,9 @@ jobs:
           VITE_GOOGLE_GEN_AI_KEY: '${{ secrets.VITE_GOOGLE_GEN_AI_KEY }}'
       - name: Verify Build Output
         run: ls -R dist
-      - name: Deploy to Firebase
-        run: |
-          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_HEALTH_TRACKER }}' > service-account.json
-          export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/service-account.json
-          npx firebase-tools deploy --only hosting --project health-tracker-app-1cc9d --json
-        env:
-          VITE_FIREBASE_API_KEY: '${{ secrets.VITE_FIREBASE_API_KEY }}'
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_HEALTH_TRACKER }}'
+          channelId: live
+          projectId: health-tracker-app-1cc9d
